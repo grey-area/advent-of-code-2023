@@ -42,6 +42,8 @@ class Map:
         self.start_coordinates = self.find_start_coordinates(map_lines)
         self.map = self.create_map(map_lines)
         self.set_start_type()
+        self.loop_coordinates = self.find_loop()
+        self.height = len(map_lines)
 
     @staticmethod
     def find_start_coordinates(map_lines):
@@ -72,27 +74,42 @@ class Map:
                 self.map[self.start_coordinates].set_connection_type(connection_type)
                 break
 
-    def find_furthest_point(self):
+    def find_loop(self):
         coordinates = self.start_coordinates
         connections = self.map[coordinates].connections
-        steps = 0
-        step_dict = {}
 
+        loop_coordinates = set()
         while True:
+            loop_coordinates.add(coordinates)
             # if connections has more than one element, pick one, otherwise just use the only element
             connection = next(iter(connections))
             coordinates += connection
             connections = self.map[coordinates].connections - {-connection}
-            steps += 1
-            step_dict[coordinates] = steps
             if coordinates == self.start_coordinates:
                 break
+        return loop_coordinates
 
-        distance_dict = {coord: min(step_dict[coord], steps - step_dict[coord]) for coord in step_dict}
-        return max(distance_dict.values())
+    def count_interior_points_on_line(self, y):
+        interior_points = 0
+        inside = False
+        coordinates = Coordinate(0, y)
+
+        while coordinates in self.map:
+            node = self.map[coordinates]
+            if coordinates in self.loop_coordinates:
+                if node.type in {"|", "7", "F"}:
+                    inside = not inside
+            elif inside:
+                interior_points += 1
+            coordinates += Coordinate(1, 0)
+
+        return interior_points
+
+    def count_interior_points(self):
+        return sum(self.count_interior_points_on_line(y) for y in range(self.height))
 
 
 if __name__ == "__main__":
     map = Map("input.txt")
-    furthest_distance = map.find_furthest_point()
-    print(furthest_distance)
+    interior_points = map.count_interior_points()
+    print(interior_points)
