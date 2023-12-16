@@ -63,18 +63,17 @@ class Map:
 
     def update_beam(self, beam):
         new_beams = set()
-        for beam in self.beams:
-            beam = beam.update()
+        beam = beam.update()
 
-            if beam.position.y < 0 or beam.position.y >= len(self.map):
-                continue
-            if beam.position.x < 0 or beam.position.x >= len(self.map[0]):
-                continue
-            map_contents = self.map[beam.position.y][beam.position.x]
+        if beam.position.y < 0 or beam.position.y >= len(self.map):
+            return new_beams
+        if beam.position.x < 0 or beam.position.x >= len(self.map[0]):
+            return new_beams
+        map_contents = self.map[beam.position.y][beam.position.x]
 
-            new_directions = self.dir_update_dict[map_contents][beam.direction]
-            for direction in new_directions:
-                new_beams.add(Beam(beam.position, direction))
+        new_directions = self.dir_update_dict[map_contents][beam.direction]
+        for direction in new_directions:
+            new_beams.add(Beam(beam.position, direction))
         return new_beams
 
     def update(self):
