@@ -21,23 +21,6 @@ class Map:
                     map_array[i, j] = 2
         return map_array
 
-    @staticmethod
-    def map_array_to_text(map_array):
-        map_text = ""
-        for i in range(map_array.shape[0]):
-            for j in range(map_array.shape[1]):
-                if map_array[i, j] == 0:
-                    map_text += "."
-                elif map_array[i, j] == 1:
-                    map_text += "O"
-                elif map_array[i, j] == 2:
-                    map_text += "#"
-            map_text += "\n"
-        return map_text
-
-    def __str__(self):
-        return self.map_array_to_text(self.map)
-
     def tilt_column_north(self, j):
         column = self.map[:, j]
         cubic_rock_locations = np.where(column == 2)[0]
@@ -51,11 +34,10 @@ class Map:
             sub_column[round_rock_count:] = 0
 
     def tilt_north(self):
-        # for each column
         for j in range(self.map.shape[1]):
             self.tilt_column_north(j)
 
-    def compute_score(self):
+    def compute_north_load(self):
         round_rock_ys, _ = np.where(self.map == 1)
         height = self.map.shape[0]
         score = np.sum(height - round_rock_ys)
@@ -65,5 +47,5 @@ class Map:
 if __name__ == "__main__":
     map = Map("input.txt")
     map.tilt_north()
-    score = map.compute_score()
-    print(score)
+    north_load = map.compute_north_load()
+    print(north_load)
