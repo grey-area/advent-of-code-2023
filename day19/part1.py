@@ -1,7 +1,6 @@
 from pathlib import Path
 import re
 from dataclasses import dataclass
-from collections import defaultdict
 
 
 @dataclass(frozen=True)
@@ -71,6 +70,7 @@ def parse_part(part_text, i):
     numbers = re.findall(r"\d+", part_text)
     return Part(i, *map(int, numbers))
 
+
 def parse_input(filename):
     text = Path(filename).read_text()
     workflow_text, part_text = text.split("\n\n")
@@ -81,7 +81,6 @@ def parse_input(filename):
     parts = [parse_part(part_text, i) for i, part_text in enumerate(part_texts)]
 
     return workflows, parts
-
 
 
 if __name__ == "__main__":
